@@ -1,608 +1,598 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AWS Architecture - Campus Lost & Found</title>
-  <style>
-    /* Base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: "Georgia", "Times New Roman", serif;
-      background: #F5F4EF;
-      color: #2E2C27;
-      line-height: 1.6;
-    }
-
-    h1, h2, h3 {
-      font-family: "Georgia", serif;
-      font-weight: 600;
-      color: #2E2C27;
-    }
-
-    p {
-      font-family: "Helvetica Neue", sans-serif;
-      color: #555;
-      font-size: 1rem;
-    }
-
-    a {
-      text-decoration: none;
-    }
-
-    /* Layout */
-    .container {
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    header {
-      text-align: center;
-      padding: 4rem 2rem 3rem;
-      background: linear-gradient(to bottom, #E8EFE5, #F5F4EF);
-      border-radius: 24px;
-      margin-bottom: 3rem;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    header p {
-      color: #6B705C;
-      font-size: 1.2rem;
-    }
-
-    /* Badge */
-    .badge {
-      display: inline-block;
-      background: #809671;
-      color: white;
-      padding: 8px 20px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-size: 0.9rem;
-    }
-
-    /* Card sections */
-    .card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      margin-bottom: 1rem;
-      color: #809671;
-      border-bottom: 2px solid #E5E0D8;
-      padding-bottom: 0.5rem;
-    }
-
-    /* Diagram */
-    .diagram-container {
-      background: #F5F4EF;
-      border-radius: 20px;
-      padding: 2rem;
-      text-align: center;
-      color: #333;
-      border: 1px solid #B3B792;
-      overflow: auto;
-    }
-
-    /* Button */
-    .btn {
-      display: inline-block;
-      margin-top: 1rem;
-      background: #809671;
-      color: white;
-      padding: 0.8rem 1.6rem;
-      border-radius: 30px;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-
-    .btn:hover {
-      background: #6B705C;
-    }
-
-    /* Service table */
-    .service-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    .service-table th {
-      background: #E5E0D8;
-      padding: 12px 15px;
-      text-align: left;
-      font-weight: 600;
-      color: #2E2C27;
-      border-bottom: 2px solid #B3B792;
-    }
-
-    .service-table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #E5E0D8;
-    }
-
-    .service-table tr:hover {
-      background: #F5F4EF;
-    }
-
-    /* Flow steps */
-    .flow-steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .flow-step {
-      background: #E8EFE5;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-
-    .flow-step h3 {
-      color: #809671;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-    }
-
-    .step-number {
-      background: #809671;
-      color: white;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 10px;
-      font-size: 0.9rem;
-    }
-
-    /* Cost section */
-    .cost-section {
-      background: #F0F7ED;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin: 1.5rem 0;
-      border-left: 4px solid #809671;
-    }
-
-    .cost-section h3 {
-      color: #809671;
-      margin-bottom: 10px;
-    }
-
-    /* Legend */
-    .legend {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-top: 1.5rem;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .color-box {
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-      border-radius: 4px;
-    }
-
-    /* Arrow legend */
-    .arrow-legend {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: #F5F4EF;
-      border-radius: 8px;
-    }
-
-    .arrow-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .arrow-line {
-      width: 40px;
-      height: 2px;
-      margin-right: 10px;
-    }
-
-    .solid-arrow {
-      background: #FF9900;
-      position: relative;
-    }
-
-    .solid-arrow::after {
-      content: '';
-      position: absolute;
-      right: -6px;
-      top: -3px;
-      width: 0;
-      height: 0;
-      border-left: 6px solid #FF9900;
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
-    }
-
-    .dashed-arrow {
-      background: #0066cc;
-      position: relative;
-      border: 1px dashed #0066cc;
-    }
-
-    .dashed-arrow::after {
-      content: '';
-      position: absolute;
-      right: -6px;
-      top: -3px;
-      width: 0;
-      height: 0;
-      border-left: 6px solid #0066cc;
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
-    }
-
-    /* User icon */
-    .user-icon {
-      width: 70px;
-      height: 70px;
-      background: #232F3E;
-      border-radius: 50%;
-      position: relative;
-      margin: 0 auto 10px;
-    }
-
-    .user-icon::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      top: 20px;
-      left: 15px;
-    }
-
-    .user-icon::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      top: 20px;
-      right: 15px;
-    }
-
-    .user-smile {
-      position: absolute;
-      width: 30px;
-      height: 15px;
-      border-bottom: 3px solid white;
-      border-radius: 0 0 15px 15px;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-
-    <!-- Hero -->
-    <header>
-      <h1>AWS Architecture Dashboard</h1>
-      <p>Campus Lost & Found System</p>
-      <span class="badge">Simple • Cost-Effective • Scalable</span>
-    </header>
-
-    <!-- Main Diagram -->
-    <section class="card">
-      <h2>System Architecture</h2>
-      <div class="diagram-container">
-        <svg viewBox="0 0 1800 1200" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <style>
-              .aws-border { fill: none; stroke: #232F3E; stroke-width: 3; }
-              .vpc-box { fill: none; stroke: #147B4E; stroke-width: 3; }
-              .az-box { fill: none; stroke: #00A1C9; stroke-width: 2; stroke-dasharray: 8,5; }
-              .security-group { fill: none; stroke: #DD344C; stroke-width: 2; stroke-dasharray: 5,3; }
-              .public-subnet { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 2; }
-              .private-subnet { fill: #E3F2FD; stroke: #2196F3; stroke-width: 2; }
-              .service-box { stroke: #232F3E; stroke-width: 2; }
-              .ec2-box { fill: #FF9900; }
-              .rds-box { fill: #527FFF; }
-              .s3-box { fill: #569A31; }
-              .cloudfront-box { fill: #8C4FFF; }
-              .iam-box { fill: #DD344C; }
-              .igw-box { fill: #4A90E2; }
-              .route53-box { fill: #8C4FFF; }
-              .text { font-family: Arial, sans-serif; font-size: 14px; fill: #232F3E; }
-              .title-text { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #232F3E; }
-              .subtitle-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #232F3E; }
-              .small-text { font-family: Arial, sans-serif; font-size: 12px; fill: #232F3E; }
-              .label-text { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; }
-              .arrow { stroke: #FF9900; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
-              .arrow-data { stroke: #0066cc; stroke-width: 2; fill: none; marker-end: url(#arrowhead-blue); stroke-dasharray: 5,3; }
-            </style>
-            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <polygon points="0 0, 10 3, 0 6" fill="#FF9900" />
-            </marker>
-            <marker id="arrowhead-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <polygon points="0 0, 10 3, 0 6" fill="#0066cc" />
-            </marker>
-          </defs>
-
-          <!-- Users -->
-          <circle cx="150" cy="250" r="45" fill="#232F3E"/>
-          <circle cx="130" cy="235" r="10" fill="white"/>
-          <circle cx="170" cy="235" r="10" fill="white"/>
-          <path d="M 110 280 Q 150 305 190 280" stroke="white" stroke-width="5" fill="none"/>
-          <text x="150" y="340" class="subtitle-text" text-anchor="middle">Users</text>
-          <text x="150" y="360" class="small-text" text-anchor="middle">(Students)</text>
-
-          <!-- Route 53 -->
-          <rect x="320" y="200" width="180" height="90" class="service-box route53-box" rx="8"/>
-          <text x="410" y="235" class="subtitle-text" text-anchor="middle" fill="white">Route 53</text>
-          <text x="410" y="255" class="small-text" text-anchor="middle" fill="white">DNS</text>
-          <text x="410" y="273" class="small-text" text-anchor="middle" fill="white">lostandfound.edu</text>
-
-          <!-- Arrow: Users to Route 53 -->
-          <path d="M 195 250 L 320 245" class="arrow"/>
-          <text x="240" y="235" class="small-text" fill="#FF9900">1. DNS Lookup</text>
-
-          <!-- CloudFront -->
-          <rect x="560" y="200" width="180" height="90" class="service-box cloudfront-box" rx="8"/>
-          <text x="650" y="235" class="subtitle-text" text-anchor="middle" fill="white">CloudFront</text>
-          <text x="650" y="255" class="small-text" text-anchor="middle" fill="white">CDN</text>
-          <text x="650" y="273" class="small-text" text-anchor="middle" fill="white">HTTPS + Caching</text>
-
-          <!-- Arrow: Route 53 to CloudFront -->
-          <path d="M 500 245 L 560 245" class="arrow"/>
-          <text x="520" y="235" class="small-text" fill="#FF9900">2. Route</text>
-
-          <!-- S3 Static Assets -->
-          <rect x="320" y="380" width="180" height="110" class="service-box s3-box" rx="8"/>
-          <text x="410" y="420" class="subtitle-text" text-anchor="middle">S3 Bucket</text>
-          <text x="410" y="440" class="small-text" text-anchor="middle">Static Website</text>
-          <text x="410" y="458" class="small-text" text-anchor="middle">HTML/CSS/JS</text>
-          <text x="410" y="476" class="small-text" text-anchor="middle">Images</text>
-
-          <!-- Arrow: CloudFront to S3 -->
-          <path d="M 610 290 L 450 380" class="arrow"/>
-          <text x="510" y="330" class="small-text" fill="#FF9900">3. Get Static</text>
-
-          <!-- S3 User Uploads -->
-          <rect x="320" y="550" width="180" height="110" class="service-box s3-box" rx="8"/>
-          <text x="410" y="590" class="subtitle-text" text-anchor="middle">S3 Bucket</text>
-          <text x="410" y="610" class="small-text" text-anchor="middle">User Uploads</text>
-          <text x="410" y="628" class="small-text" text-anchor="middle">Item Photos</text>
-          <text x="410" y="646" class="small-text" text-anchor="middle">Versioning ON</text>
-
-          <!-- AWS Cloud Border -->
-          <rect x="800" y="80" width="900" height="1000" class="aws-border" rx="10"/>
-          <text x="820" y="110" class="title-text">AWS Cloud (Region: us-east-1)</text>
-
-          <!-- VPC -->
-          <rect x="840" y="160" width="820" height="880" class="vpc-box" rx="10"/>
-          <text x="860" y="190" class="label-text" fill="#147B4E">VPC (10.0.0.0/16)</text>
-
-          <!-- Internet Gateway -->
-          <ellipse cx="1020" cy="280" rx="80" ry="60" fill="#4A90E2" stroke="#232F3E" stroke-width="2"/>
-          <text x="1020" y="275" class="subtitle-text" text-anchor="middle" fill="white">Internet</text>
-          <text x="1020" y="295" class="subtitle-text" text-anchor="middle" fill="white">Gateway</text>
-
-          <!-- Arrow: CloudFront to IGW -->
-          <path d="M 740 245 L 940 275" class="arrow"/>
-          <text x="820" y="235" class="small-text" fill="#FF9900">4. API Request</text>
-
-          <!-- Availability Zone -->
-          <rect x="880" y="380" width="740" height="620" class="az-box" rx="8"/>
-          <text x="900" y="410" class="label-text" fill="#00A1C9">Availability Zone (us-east-1a)</text>
-
-          <!-- Public Subnet -->
-          <rect x="920" y="460" width="320" height="280" class="public-subnet" rx="8"/>
-          <text x="940" y="490" class="label-text" fill="#4CAF50">Public Subnet (10.0.1.0/24)</text>
-
-          <!-- Security Group: Web Server -->
-          <rect x="950" y="530" width="260" height="180" class="security-group" rx="5"/>
-          <text x="970" y="555" class="small-text" fill="#DD344C">Security Group: Web-Server-SG</text>
-          <text x="970" y="572" class="small-text" fill="#DD344C">Inbound: Port 80/443 from 0.0.0.0/0</text>
-          <text x="970" y="589" class="small-text" fill="#DD344C">Outbound: Port 3306 to DB-SG, 443 to S3</text>
-
-          <!-- EC2 Instance -->
-          <rect x="980" y="570" width="200" height="100" class="service-box ec2-box" rx="5"/>
-          <text x="1080" y="605" class="subtitle-text" text-anchor="middle">EC2 Instance</text>
-          <text x="1080" y="625" class="small-text" text-anchor="middle">Backend Server</text>
-          <text x="1080" y="641" class="small-text" text-anchor="middle">Node.js / Python</text>
-          <text x="1080" y="657" class="small-text" text-anchor="middle">t3.small</text>
-
-          <!-- Arrow: IGW to EC2 -->
-          <path d="M 1040 340 L 1080 570" class="arrow"/>
-          <text x="1040" y="440" class="small-text" fill="#FF9900">5. Forward</text>
-
-          <!-- Private Subnet -->
-          <rect x="920" y="780" width="660" height="180" class="private-subnet" rx="8"/>
-          <text x="940" y="810" class="label-text" fill="#2196F3">Private Subnet (10.0.10.0/24)</text>
-
-          <!-- Security Group: Database -->
-          <rect x="950" y="850" width="600" height="90" class="security-group" rx="5"/>
-          <text x="970" y="875" class="small-text" fill="#DD344C">Security Group: Database-SG</text>
-          <text x="970" y="892" class="small-text" fill="#DD344C">Inbound: Port 3306 from Web-Server-SG ONLY</text>
-
-          <!-- RDS Instance -->
-          <rect x="1050" y="865" width="400" height="60" class="service-box rds-box" rx="5"/>
-          <text x="1250" y="885" class="subtitle-text" text-anchor="middle" fill="white">Amazon RDS</text>
-          <text x="1250" y="902" class="small-text" text-anchor="middle" fill="white">MySQL / PostgreSQL</text>
-          <text x="1250" y="918" class="small-text" text-anchor="middle" fill="white">db.t3.micro</text>
-
-          <!-- Arrow: EC2 to RDS -->
-          <path d="M 1080 670 L 1150 865" class="arrow"/>
-          <text x="1100" y="750" class="small-text" fill="#FF9900">6. Query DB</text>
-
-          <!-- Arrow: EC2 to S3 Photos -->
-          <path d="M 980 620 L 500 605" class="arrow-data"/>
-          <text x="700" y="600" class="small-text" fill="#0066cc">7. Upload Photos</text>
-
-          <!-- IAM -->
-          <rect x="1350" y="460" width="280" height="100" class="service-box iam-box" rx="8"/>
-          <text x="1490" y="495" class="subtitle-text" text-anchor="middle" fill="white">IAM</text>
-          <text x="1490" y="515" class="small-text" text-anchor="middle" fill="white">EC2 Instance Role:</text>
-          <text x="1490" y="532" class="small-text" text-anchor="middle" fill="white">• S3 Full Access</text>
-          <text x="1490" y="548" class="small-text" text-anchor="middle" fill="white">• RDS Connect</text>
-
-          <!-- Arrow: IAM to EC2 -->
-          <path d="M 1350 510 L 1180 600" class="arrow-data"/>
-          <text x="1250" y="540" class="small-text" fill="#0066cc">Permissions</text>
-
-          <!-- Response Path -->
-          <path d="M 1040 600 L 195 280" class="arrow" stroke-dasharray="5,5"/>
-          <text x="600" y="400" class="small-text" fill="#FF9900">8. Response</text>
-        </svg>
-      </div>
-    </section>
-
-    <!-- Details Below Diagram -->
-    <div class="content">
-      <div class="card">
-        <h2>Key Services</h2>
-        <table class="service-table">
-          <thead>
-            <tr>
-              <th>Area</th>
-              <th>AWS Service</th>
-              <th>Usage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Security</strong></td>
-              <td><strong>IAM</strong></td>
-              <td>Defines roles and policies for secure access to AWS resources</td>
-            </tr>
-            <tr>
-              <td><strong>Storage</strong></td>
-              <td><strong>Amazon S3</strong></td>
-              <td>Stores static website files and user-uploaded photos of lost/found items</td>
-            </tr>
-            <tr>
-              <td><strong>Database</strong></td>
-              <td><strong>Amazon RDS</strong></td>
-              <td>Stores user profiles, item posts, and messages in MySQL/PostgreSQL</td>
-            </tr>
-            <tr>
-              <td><strong>Compute</strong></td>
-              <td><strong>Amazon EC2</strong></td>
-              <td>Hosts web application backend to handle login, posts, and messaging</td>
-            </tr>
-            <tr>
-              <td><strong>Network/Delivery</strong></td>
-              <td><strong>Amazon CloudFront</strong></td>
-              <td>Acts as CDN to deliver static files quickly with HTTPS encryption</td>
-            </tr>
-            <tr>
-              <td><strong>DNS</strong></td>
-              <td><strong>Route 53</strong></td>
-              <td>Manages domain name resolution for lostandfound.edu</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2>Arrow Legend</h2>
-        <div class="arrow-legend">
-          <div class="arrow-item">
-            <div class="arrow-line solid-arrow"></div>
-            <span><strong>Solid Orange Arrow:</strong> User request flow and data queries</span>
-          </div>
-          <div class="arrow-item">
-            <div class="arrow-line dashed-arrow"></div>
-            <span><strong>Dashed Blue Arrow:</strong> Permission grants and data uploads</span>
-          </div>
-          <div class="arrow-item">
-            <div class="arrow-line solid-arrow" style="stroke-dasharray: 5,5;"></div>
-            <span><strong>Dashed Orange Arrow:</strong> Response path back to user</span>
-          </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Architecture - Campus Lost & Found</title>
+    <style>
+        /* Base */
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
+
+        body {
+        font-family: "Georgia", "Times New Roman", serif;
+        background: #F5F4EF;
+        color: #2E2C27;
+        line-height: 1.6;
+        overflow-x: auto;
+        }
+
+        h1, h2, h3 {
+        font-family: "Georgia", serif;
+        font-weight: 600;
+        color: #2E2C27;
+        }
+
+        p {
+        font-family: "Helvetica Neue", sans-serif;
+        color: #555;
+        font-size: 1rem;
+        }
+
+        a {
+        text-decoration: none;
+        }
+
+        /* Layout */
+        .container {
+        max-width: 2000px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-width: 1200px;
+        }
+
+        header {
+        text-align: center;
+        padding: 4rem 2rem 3rem;
+        background: linear-gradient(to bottom, #E8EFE5, #F5F4EF);
+        border-radius: 24px;
+        margin-bottom: 3rem;
+        }
+
+        header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        }
+
+        header p {
+        color: #6B705C;
+        font-size: 1.2rem;
+        }
+
+        /* Badge */
+        .badge {
+        display: inline-block;
+        background: #809671;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        }
+
+        /* Card sections */
+        .card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+        margin-bottom: 1rem;
+        color: #809671;
+        border-bottom: 2px solid #E5E0D8;
+        padding-bottom: 0.5rem;
+        }
+
+        /* Diagram */
+        .diagram-container {
+        background: #F5F4EF;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        color: #333;
+        border: 1px solid #B3B792;
+        overflow: auto;
+        min-height: 800px;
+        }
+
+        /* Button */
+        .btn {
+        display: inline-block;
+        margin-top: 1rem;
+        background: #809671;
+        color: white;
+        padding: 0.8rem 1.6rem;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+        background: #6B705C;
+        }
+
+        /* Service table */
+        .service-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        }
+
+        .service-table th {
+        background: #E5E0D8;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #2E2C27;
+        border-bottom: 2px solid #B3B792;
+        }
+
+        .service-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #E5E0D8;
+        }
+
+        .service-table tr:hover {
+        background: #F5F4EF;
+        }
+
+        /* Flow steps */
+        .flow-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        }
+
+        .flow-step {
+        background: #E8EFE5;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .flow-step h3 {
+        color: #809671;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        }
+
+        .step-number {
+        background: #809671;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-size: 0.9rem;
+        }
+
+        /* Cost section */
+        .cost-section {
+        background: #F0F7ED;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 4px solid #809671;
+        }
+
+        .cost-section h3 {
+        color: #809671;
+        margin-bottom: 10px;
+        }
+
+        /* Arrow legend */
+        .arrow-legend {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #F5F4EF;
+        border-radius: 8px;
+        }
+
+        .arrow-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        }
+
+        .arrow-line {
+        width: 40px;
+        height: 2px;
+        margin-right: 10px;
+        }
+
+        .solid-arrow {
+        background: #FF9900;
+        position: relative;
+        }
+
+        .solid-arrow::after {
+        content: '';
+        position: absolute;
+        right: -6px;
+        top: -3px;
+        width: 0;
+        height: 0;
+        border-left: 6px solid #FF9900;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        }
+
+        .dashed-arrow {
+        background: #0066cc;
+        position: relative;
+        border: 1px dashed #0066cc;
+        }
+
+        .dashed-arrow::after {
+        content: '';
+        position: absolute;
+        right: -6px;
+        top: -3px;
+        width: 0;
+        height: 0;
+        border-left: 6px solid #0066cc;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        }
+
+        /* Security Group section - Updated to green theme */
+        .security-group-section {
+        background: #F0F7ED;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 4px solid #809671;
+        }
+
+        .security-group-section h3 {
+        color: #809671;
+        margin-bottom: 10px;
+        }
+
+        .sg-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #E8EFE5;
+        border-radius: 8px;
+        }
+
+        .sg-item h4 {
+        color: #809671;
+        margin-bottom: 5px;
+        }
+
+        /* Content grid */
+        .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+        .content {
+            grid-template-columns: 1fr;
+        }
+        }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+
+        <!-- Hero -->
+        <header>
+        <h1>AWS Architecture Dashboard</h1>
+        <p>Campus Lost & Found System</p>
+        <span class="badge">Simple • Cost-Effective • Scalable</span>
+        </header>
+
+        <!-- Main Diagram -->
+        <section class="card">
+        <h2>System Architecture</h2>
+        <div class="diagram-container">
+            <svg viewBox="0 0 1800 1200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <style>
+                .aws-border { fill: none; stroke: #232F3E; stroke-width: 3; }
+                .vpc-box { fill: none; stroke: #147B4E; stroke-width: 3; }
+                .az-box { fill: none; stroke: #00A1C9; stroke-width: 2; stroke-dasharray: 8,5; }
+                .security-group { fill: none; stroke: #DD344C; stroke-width: 2; stroke-dasharray: 5,3; }
+                .public-subnet { fill: #E8F5E9; stroke: #4CAF50; stroke-width: 2; }
+                .private-subnet { fill: #E3F2FD; stroke: #2196F3; stroke-width: 2; }
+                .service-box { stroke: #232F3E; stroke-width: 2; }
+                .ec2-box { fill: #FF9900; }
+                .rds-box { fill: #527FFF; }
+                .s3-box { fill: #569A31; }
+                .cloudfront-box { fill: #8C4FFF; }
+                .iam-box { fill: #DD344C; }
+                .igw-box { fill: #4A90E2; }
+                .route53-box { fill: #8C4FFF; }
+                .text { font-family: Arial, sans-serif; font-size: 12px; fill: #232F3E; }
+                .title-text { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #232F3E; }
+                .subtitle-text { font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #232F3E; }
+                .small-text { font-family: Arial, sans-serif; font-size: 10px; fill: #232F3E; }
+                .label-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; }
+                .arrow { stroke: #FF9900; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+                .arrow-data { stroke: #0066cc; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead-blue); stroke-dasharray: 5,3; }
+                </style>
+                <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#FF9900" />
+                </marker>
+                <marker id="arrowhead-blue" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#0066cc" />
+                </marker>
+            </defs>
+
+            <!-- Users -->
+            <circle cx="150" cy="200" r="35" fill="#232F3E"/>
+            <circle cx="130" cy="185" r="8" fill="white"/>
+            <circle cx="170" cy="185" r="8" fill="white"/>
+            <path d="M 115 230 Q 150 250 185 230" stroke="white" stroke-width="4" fill="none"/>
+            <text x="150" y="280" class="subtitle-text" text-anchor="middle">Users</text>
+            <text x="150" y="295" class="small-text" text-anchor="middle">(Students)</text>
+
+            <!-- Route 53 -->
+            <rect x="300" y="160" width="140" height="70" class="service-box route53-box" rx="6"/>
+            <text x="370" y="185" class="subtitle-text" text-anchor="middle" fill="white">Route 53</text>
+            <text x="370" y="200" class="small-text" text-anchor="middle" fill="white">DNS</text>
+            <text x="370" y="215" class="small-text" text-anchor="middle" fill="white">lostandfound.edu</text>
+
+            <!-- Arrow: Users to Route 53 -->
+            <path d="M 185 200 L 300 195" class="arrow"/>
+            <text x="220" y="185" class="small-text" fill="#FF9900">1. DNS Lookup</text>
+
+            <!-- CloudFront -->
+            <rect x="500" y="160" width="140" height="70" class="service-box cloudfront-box" rx="6"/>
+            <text x="570" y="185" class="subtitle-text" text-anchor="middle" fill="white">CloudFront</text>
+            <text x="570" y="200" class="small-text" text-anchor="middle" fill="white">CDN</text>
+            <text x="570" y="215" class="small-text" text-anchor="middle" fill="white">HTTPS + Caching</text>
+
+            <!-- Arrow: Route 53 to CloudFront -->
+            <path d="M 440 195 L 500 195" class="arrow"/>
+            <text x="460" y="185" class="small-text" fill="#FF9900">2. Route</text>
+
+            <!-- S3 Static Assets -->
+            <rect x="300" y="300" width="140" height="90" class="service-box s3-box" rx="6"/>
+            <text x="370" y="330" class="subtitle-text" text-anchor="middle">S3 Bucket</text>
+            <text x="370" y="345" class="small-text" text-anchor="middle">Static Website</text>
+            <text x="370" y="360" class="small-text" text-anchor="middle">HTML/CSS/JS</text>
+            <text x="370" y="375" class="small-text" text-anchor="middle">Images</text>
+
+            <!-- Arrow: CloudFront to S3 -->
+            <path d="M 550 230 L 380 300" class="arrow"/>
+            <text x="450" y="260" class="small-text" fill="#FF9900">3. Get Static</text>
+
+            <!-- S3 User Uploads -->
+            <rect x="300" y="450" width="140" height="90" class="service-box s3-box" rx="6"/>
+            <text x="370" y="480" class="subtitle-text" text-anchor="middle">S3 Bucket</text>
+            <text x="370" y="495" class="small-text" text-anchor="middle">User Uploads</text>
+            <text x="370" y="510" class="small-text" text-anchor="middle">Item Photos</text>
+            <text x="370" y="525" class="small-text" text-anchor="middle">Versioning ON</text>
+
+            <!-- AWS Cloud Border -->
+            <rect x="750" y="80" width="900" height="1000" class="aws-border" rx="8"/>
+            <text x="770" y="110" class="title-text">AWS Cloud (Region: us-east-1)</text>
+
+            <!-- VPC -->
+            <rect x="780" y="150" width="840" height="880" class="vpc-box" rx="8"/>
+            <text x="800" y="180" class="label-text" fill="#147B4E">VPC (10.0.0.0/16)</text>
+
+            <!-- Internet Gateway -->
+            <ellipse cx="900" cy="280" rx="70" ry="50" fill="#4A90E2" stroke="#232F3E" stroke-width="2"/>
+            <text x="900" y="275" class="subtitle-text" text-anchor="middle" fill="white">Internet</text>
+            <text x="900" y="292" class="subtitle-text" text-anchor="middle" fill="white">Gateway</text>
+
+            <!-- Arrow: CloudFront to IGW -->
+            <path d="M 640 195 L 830 270" class="arrow"/>
+            <text x="720" y="220" class="small-text" fill="#FF9900">4. API Request</text>
+
+            <!-- Availability Zone -->
+            <rect x="820" y="350" width="760" height="620" class="az-box" rx="6"/>
+            <text x="840" y="380" class="label-text" fill="#00A1C9">Availability Zone (us-east-1a)</text>
+
+            <!-- Public Subnet -->
+            <rect x="850" y="430" width="320" height="240" class="public-subnet" rx="6"/>
+            <text x="870" y="460" class="label-text" fill="#4CAF50">Public Subnet (10.0.1.0/24)</text>
+
+            <!-- Security Group: Web Server -->
+            <rect x="880" y="490" width="260" height="160" class="security-group" rx="4"/>
+            <text x="900" y="515" class="small-text" fill="#DD344C">Security Group: Web-Server-SG</text>
+            <text x="900" y="530" class="small-text" fill="#DD344C">Inbound: Port 80/443</text>
+            <text x="900" y="545" class="small-text" fill="#DD344C">Outbound: Port 3306, 443</text>
+
+            <!-- EC2 Instance -->
+            <rect x="910" y="560" width="200" height="80" class="service-box ec2-box" rx="4"/>
+            <text x="1010" y="590" class="subtitle-text" text-anchor="middle">EC2 Instance</text>
+            <text x="1010" y="605" class="small-text" text-anchor="middle">Backend Server</text>
+            <text x="1010" y="620" class="small-text" text-anchor="middle">Node.js / Python</text>
+
+            <!-- Arrow: IGW to EC2 -->
+            <path d="M 920 330 L 980 560" class="arrow"/>
+            <text x="930" y="430" class="small-text" fill="#FF9900">5. Forward</text>
+
+            <!-- Private Subnet -->
+            <rect x="850" y="720" width="700" height="200" class="private-subnet" rx="6"/>
+            <text x="870" y="750" class="label-text" fill="#2196F3">Private Subnet (10.0.10.0/24)</text>
+
+            <!-- Security Group: Database -->
+            <rect x="880" y="790" width="640" height="100" class="security-group" rx="4"/>
+            <text x="900" y="815" class="small-text" fill="#DD344C">Security Group: Database-SG</text>
+            <text x="900" y="830" class="small-text" fill="#DD344C">Inbound: Port 3306 from Web-Server-SG</text>
+
+            <!-- RDS Instance -->
+            <rect x="1100" y="800" width="380" height="70" class="service-box rds-box" rx="4"/>
+            <text x="1290" y="825" class="subtitle-text" text-anchor="middle" fill="white">Amazon RDS</text>
+            <text x="1290" y="840" class="small-text" text-anchor="middle" fill="white">MySQL / PostgreSQL</text>
+
+            <!-- Arrow: EC2 to RDS -->
+            <path d="M 1010 640 L 1150 800" class="arrow"/>
+            <text x="1060" y="710" class="small-text" fill="#FF9900">6. Query DB</text>
+
+            <!-- Arrow: EC2 to S3 Photos -->
+            <path d="M 910 600 L 440 495" class="arrow-data"/>
+            <text x="650" y="540" class="small-text" fill="#0066cc">7. Upload Photos</text>
+
+            <!-- IAM -->
+            <rect x="1250" y="430" width="300" height="90" class="service-box iam-box" rx="6"/>
+            <text x="1400" y="460" class="subtitle-text" text-anchor="middle" fill="white">IAM</text>
+            <text x="1400" y="475" class="small-text" text-anchor="middle" fill="white">EC2 Instance Role:</text>
+            <text x="1400" y="490" class="small-text" text-anchor="middle" fill="white">• S3 Full Access</text>
+
+            <!-- Arrow: IAM to EC2 -->
+            <path d="M 1250 475 L 1110 600" class="arrow-data"/>
+            <text x="1160" y="530" class="small-text" fill="#0066cc">Permissions</text>
+
+            <!-- Response Path -->
+            <path d="M 920 580 L 185 230" class="arrow" stroke-dasharray="5,5"/>
+            <text x="520" y="390" class="small-text" fill="#FF9900">8. Response</text>
+            </svg>
         </div>
-        
-        <div class="cost-section">
-          <h3>Monthly Cost Estimate</h3>
-          <p><strong>Route 53:</strong> ~$0.50/month</p>
-          <p><strong>CloudFront:</strong> ~$5-10/month</p>
-          <p><strong>S3 (x2):</strong> ~$5-10/month</p>
-          <p><strong>EC2:</strong> ~$15/month (t3.small)</p>
-          <p><strong>RDS:</strong> ~$15/month (db.t3.micro)</p>
-          <p style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #809671; font-weight: bold;">
-            Total Estimated Cost: ~$35-50/month
-          </p>
+        </section>
+
+        <!-- Details Below Diagram -->
+        <div class="content">
+        <div class="card">
+            <h2>Key Services</h2>
+            <table class="service-table">
+            <thead>
+                <tr>
+                <th>Area</th>
+                <th>AWS Service</th>
+                <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td><strong>Security</strong></td>
+                <td><strong>IAM</strong></td>
+                <td>Defines roles and policies for secure access to AWS resources</td>
+                </tr>
+                <tr>
+                <td><strong>Storage</strong></td>
+                <td><strong>Amazon S3</strong></td>
+                <td>Stores static website files and user-uploaded photos of lost/found items</td>
+                </tr>
+                <tr>
+                <td><strong>Database</strong></td>
+                <td><strong>Amazon RDS</strong></td>
+                <td>Stores user profiles, item posts, and messages in MySQL/PostgreSQL</td>
+                </tr>
+                <tr>
+                <td><strong>Compute</strong></td>
+                <td><strong>Amazon EC2</strong></td>
+                <td>Hosts web application backend to handle login, posts, and messaging</td>
+                </tr>
+                <tr>
+                <td><strong>Network/Delivery</strong></td>
+                <td><strong>Amazon CloudFront</strong></td>
+                <td>Acts as CDN to deliver static files quickly with HTTPS encryption</td>
+                </tr>
+                <tr>
+                <td><strong>DNS</strong></td>
+                <td><strong>Route 53</strong></td>
+                <td>Manages domain name resolution for lostandfound.edu</td>
+                </tr>
+            </tbody>
+            </table>
+
+            <div class="security-group-section">
+            <h3>Security Groups (Orange Dashed Borders)</h3>
+            <div class="sg-item">
+                <h4>Web-Server-SG (Around EC2)</h4>
+                <p><strong>Inbound Rules:</strong> Port 80/443 from 0.0.0.0/0 (allows web traffic from internet)</p>
+                <p><strong>Outbound Rules:</strong> Port 3306 to DB-SG, Port 443 to S3</p>
+            </div>
+            <div class="sg-item">
+                <h4>Database-SG (Around RDS)</h4>
+                <p><strong>Inbound Rules:</strong> Port 3306 from Web-Server-SG ONLY</p>
+                <p><strong>Outbound Rules:</strong> DENIED (database isolation - no outbound internet)</p>
+            </div>
+            <p><strong>Purpose:</strong> Security Groups act as virtual firewalls controlling traffic between services with least-privilege access.</p>
+            </div>
         </div>
-      </div>
+
+        <div class="card">
+            <h2>Arrow Legend</h2>
+            <div class="arrow-legend">
+            <div class="arrow-item">
+                <div class="arrow-line solid-arrow"></div>
+                <span><strong>Solid Orange Arrow:</strong> User request flow and data queries</span>
+            </div>
+            <div class="arrow-item">
+                <div class="arrow-line dashed-arrow"></div>
+                <span><strong>Dashed Blue Arrow:</strong> Permission grants and data uploads</span>
+            </div>
+            <div class="arrow-item">
+                <div class="arrow-line solid-arrow" style="stroke-dasharray: 5,5;"></div>
+                <span><strong>Dashed Orange Arrow:</strong> Response path back to user</span>
+            </div>
+            </div>
+            
+            <div class="cost-section">
+            <h3>Monthly Cost Estimate</h3>
+            <p><strong>Route 53:</strong> ~$0.50/month</p>
+            <p><strong>CloudFront:</strong> ~$5-10/month</p>
+            <p><strong>S3 (x2):</strong> ~$5-10/month</p>
+            <p><strong>EC2:</strong> ~$15/month (t3.small)</p>
+            <p><strong>RDS:</strong> ~$15/month (db.t3.micro)</p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #809671; font-weight: bold;">
+                Total Estimated Cost: ~$35-50/month
+            </p>
+            </div>
+        </div>
+        </div>
+
+        <section class="card">
+        <h2>Application Flow</h2>
+        <div class="flow-steps">
+            <div class="flow-step">
+            <h3><span class="step-number">1</span> DNS Lookup</h3>
+            <p>Student accesses <strong>lostandfound.edu</strong> via Route 53 DNS service</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">2</span> CDN Delivery</h3>
+            <p>CloudFront CDN delivers cached content with HTTPS encryption for security</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">3</span> Static Content</h3>
+            <p>Static files (HTML/CSS/JS) served from S3 bucket for fast loading</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">4-5</span> API Routing</h3>
+            <p>API requests routed through Internet Gateway to EC2 backend server</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">6</span> Database Query</h3>
+            <p>EC2 queries RDS database for user data, posts, and messages</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">7</span> Photo Upload</h3>
+            <p>User photos uploaded to S3 via EC2 using IAM role permissions</p>
+            </div>
+            <div class="flow-step">
+            <h3><span class="step-number">8</span> Response</h3>
+            <p>Application response sent back to user through the same path</p>
+            </div>
+        </div>
+        </section>
+
+        <!-- Action -->
+        <section class="card" style="text-align:center;">
+        <h2>Next Steps</h2>
+        <p>Review AWS best practices and explore how to implement this architecture for your campus.</p>
+        <a href="#" class="btn">View Documentation</a>
+        </section>
+
     </div>
-
-    <section class="card">
-      <h2>Application Flow</h2>
-      <div class="flow-steps">
-        <div class="flow-step">
-          <h3><span class="step-number">1</span> DNS Lookup</h3>
-          <p>Student accesses <strong>lostandfound.edu</strong> via Route 53 DNS service</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">2</span> CDN Delivery</h3>
-          <p>CloudFront CDN delivers cached content with HTTPS encryption for security</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">3</span> Static Content</h3>
-          <p>Static files (HTML/CSS/JS) served from S3 bucket for fast loading</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">4-5</span> API Routing</h3>
-          <p>API requests routed through Internet Gateway to EC2 backend server</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">6</span> Database Query</h3>
-          <p>EC2 queries RDS database for user data, posts, and messages</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">7</span> Photo Upload</h3>
-          <p>User photos uploaded to S3 via EC2 using IAM role permissions</p>
-        </div>
-        <div class="flow-step">
-          <h3><span class="step-number">8</span> Response</h3>
-          <p>Application response sent back to user through the same path</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Action -->
-    <section class="card" style="text-align:center;">
-      <h2>Next Steps</h2>
-      <p>Review AWS best practices and explore how to implement this architecture for your campus.</p>
-      <a href="#" class="btn">View Documentation</a>
-    </section>
-
-  </div>
 </body>
 </html>
